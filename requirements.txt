@@ -1,0 +1,3 @@
+redmapper
+emcee
+corner
