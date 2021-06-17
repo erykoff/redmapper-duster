@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from os import path
+
 
 exec(open('duster/_version.py').read())
 
