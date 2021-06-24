@@ -50,3 +50,6 @@ def compute_normalized_rho_pars(u, b):
     rho_min = rho_0*u
 
     return rho_0, rho_min
+
+
+# Use scipy.stats.norm for p_gaussian

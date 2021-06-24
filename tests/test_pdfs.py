@@ -4,6 +4,7 @@ import scipy.integrate
 import numpy.testing as testing
 
 from duster import pdfs
+from duster.constants import RHO_INTEGRAL_OFFSET, RHO_INTEGRAL_MIN, RHO_INTEGRAL_MAX, RHO_INTEGRAL_STEP
 
 
 class PdfTestCase(unittest.TestCase):
@@ -17,7 +18,7 @@ class PdfTestCase(unittest.TestCase):
         b = np.random.uniform(low=0.1, high=20.0, size=ntest)
         u = np.random.uniform(low=0.01, high=20.0, size=ntest)
 
-        rho_vals = np.arange(0.0, 10.0, 0.001) + 0.0001
+        rho_vals = np.arange(RHO_INTEGRAL_MIN, RHO_INTEGRAL_MAX, RHO_INTEGRAL_STEP) + RHO_INTEGRAL_OFFSET
 
         integrals = np.zeros(ntest)
 
