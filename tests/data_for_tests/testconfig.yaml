@@ -1,8 +1,22 @@
 galfile: None
+galfile_pixelized: True
 refmag: z
+
+nmag: 4
+area: 0.0
+limmag_ref: 0.0
+ref_ind: 3
+zeropoint: 30.0
+survey_mode: 0
+galfile_nside: 32
+bands: ['g', 'r', 'i', 'z']
+
+duster_nside: 128
 
 duster_mapfile1: ./data_for_tests/sfd98_subregion_4096.hsp
 duster_mapfile2: ./data_for_tests/sfd98_subregion_4096.hsp
+duster_label1: SFD98
+duster_label2: SFD98-2
 
 duster_redgalfile: ./data_for_tests/redgals_buzz_subregion.fits
 duster_chi2_max: 8.0
@@ -10,6 +24,9 @@ duster_lum_min: 0.5
 duster_zrange: [0.2, 0.7]
 
 duster_color_indices: [0, 1, 2]
+
+duster_rho_model_nsample1: 20
+duster_rho_model_nsample2: 50
 
 
 catfile: None

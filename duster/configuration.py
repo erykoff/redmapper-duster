@@ -6,24 +6,29 @@ import numpy as np
 import os
 import logging
 
-from redmapper.configuration import ConfigField, Configuration, read_yaml
+from redmapper.configuration import (ConfigField, Configuration, read_yaml,
+                                     DuplicatableConfig)
 
 
 class DusterConfiguration(Configuration):
     """Configuration class for duster.
     """
+    duster_nside = ConfigField(required=True)
+
     duster_mapfile1 = ConfigField(required=True)
     duster_mapfile2 = ConfigField(required=True)
     duster_rhofile1 = ConfigField()
     duster_rhofile2 = ConfigField()
+    duster_label1 = ConfigField(required=True)
+    duster_label2 = ConfigField(required=True)
 
-    duster_p_dust_file = ConfigField()
-    duster_p_dust_chainfile = ConfigField()
+    duster_rho_model_file = ConfigField()
+    duster_rho_model_chainfile = ConfigField()
     duster_rho_0 = ConfigField()
     duster_rho_min = ConfigField()
     duster_b = ConfigField()
 
-    duster_nwalkers  = ConfigField(default=32)
+    duster_nwalkers = ConfigField(default=32)
     duster_nproc = ConfigField(default=2)
 
     duster_redgalfile = ConfigField()
@@ -32,6 +37,9 @@ class DusterConfiguration(Configuration):
     duster_zrange = ConfigField(isArray=True, array_length=2, required=True)
 
     duster_color_indices = ConfigField(isArray=True, default=np.array([0, 1, 2]))
+
+    duster_rho_model_nsample1 = ConfigField(default=500)
+    duster_rho_model_nsample2 = ConfigField(default=1000)
 
     def __init__(self, configfile, outpath=None):
         self._file_logging_started = False
@@ -61,6 +69,8 @@ class DusterConfiguration(Configuration):
         if self.maskfile is not None and self.mask_mode == 0:
             raise ValueError(("A maskfile is set, but mask_mode is 0 (no mask). "
                               "Assuming this is not intended."))
+
+        self.d = DuplicatableConfig(self)
 
         # Finally, once everything is here, we can make paths
         if not os.path.exists(self.outpath):
