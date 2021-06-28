@@ -5,3 +5,4 @@ from .configuration import DusterConfiguration
 from .rho_maps import RhoMapMaker
 from .likelihoods import RhoModelLikelihood
 from .rho_model_fitter import RhoModelFitter
+from .rho_raw_mapper import RhoRawPixelComputer, RhoRawMapper

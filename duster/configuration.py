@@ -14,6 +14,8 @@ class DusterConfiguration(Configuration):
     """Configuration class for duster.
     """
     duster_nside = ConfigField(required=True)
+    duster_min_gals_per_pixel = ConfigField(default=50)
+    duster_min_coverage_fraction = ConfigField(default=0.5)
 
     duster_mapfile1 = ConfigField(required=True)
     duster_mapfile2 = ConfigField(required=True)
@@ -27,6 +29,7 @@ class DusterConfiguration(Configuration):
     duster_rho_0 = ConfigField()
     duster_rho_min = ConfigField()
     duster_b = ConfigField()
+    duster_norm = ConfigField()
 
     duster_nwalkers = ConfigField(default=32)
     duster_nproc = ConfigField(default=2)
@@ -37,6 +40,7 @@ class DusterConfiguration(Configuration):
     duster_zrange = ConfigField(isArray=True, array_length=2, required=True)
 
     duster_color_indices = ConfigField(isArray=True, default=np.array([0, 1, 2]))
+    duster_dereddening_constants = ConfigField(isArray=True)
 
     duster_rho_model_nsample1 = ConfigField(default=500)
     duster_rho_model_nsample2 = ConfigField(default=1000)

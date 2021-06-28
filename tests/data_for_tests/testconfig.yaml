@@ -23,6 +23,9 @@ duster_chi2_max: 8.0
 duster_lum_min: 0.5
 duster_zrange: [0.2, 0.7]
 
+duster_norm: 0.061
+duster_dereddening_constants: [1.50, 1.0, 0.75, 0.55]
+
 duster_color_indices: [0, 1, 2]
 
 duster_rho_model_nsample1: 20
@@ -33,7 +36,7 @@ catfile: None
 zredfile: None
 bkgfile: None
 bkgfile_color: None
-parfile: test_buzz_pars.fit
+parfile: ./data_for_tests/test_buzz_pars.fit
 specfile: None
 maskgalfile: None
 maskfile: ./data_for_tests/mask_subregion_4096.hsp

@@ -24,3 +24,7 @@ class RhoMapsTestCase(unittest.TestCase):
 
             self.assertEqual(rho_map.nside_sparse, nside)
             testing.assert_almost_equal(np.mean(rho_map[rho_map.valid_pixels]), 1.0)
+
+
+if __name__ == '__main__':
+    unittest.main()
