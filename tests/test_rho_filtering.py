@@ -3,16 +3,17 @@ import os
 import tempfile
 import shutil
 import healsparse as hsp
+import fitsio
+import numpy.testing as testing
 
-import redmapper
 import duster
 
 
-class RhoRawMapperTestCase(unittest.TestCase):
-    """Test for making raw rho observed maps.
+class RhoFilteringTestCase(unittest.TestCase):
+    """Test for filtering rho maps.
     """
-    def test_rho_raw_map(self):
-        """Test rho obs raw map.
+    def test_rho_filter_map(self):
+        """Test rho filtering.
         """
         config_file_name = 'testconfig.yaml'
         file_path = 'data_for_tests'
@@ -30,26 +31,37 @@ class RhoRawMapperTestCase(unittest.TestCase):
         config.duster_rhofile1 = fname
         config.duster_rhofile2 = fname
 
-        mapper = duster.RhoRawMapper(config)
+        config.duster_raw_map_file = os.path.join(file_path, 'test_raw_map_buzz_bigreg.hsp')
 
-        gals = redmapper.GalaxyCatalog.from_fits_file(config.duster_redgalfile)
+        rho_raw_map = hsp.HealSparseMap.read(config.duster_raw_map_file)
 
-        mapper.fit_rho_obs_raw_map(gals)
+        filterer = duster.RhoMapFilterer(config)
+        filterer.filter_map(rho_raw_map)
 
         # Check that the mapfile is there
-        mapfile = config.redmapper_filename('rho_raw_map', filetype='hsp')
+        mapfile = config.redmapper_filename('rho_filtered_map', filetype='hsp')
         self.assertTrue(os.path.isfile(mapfile))
-        self.assertEqual(mapfile, config.duster_raw_map_file)
+        self.assertEqual(mapfile, config.duster_filtered_map_file)
 
-        raw_map = hsp.HealSparseMap.read(mapfile)
-        self.assertEqual(len(raw_map.valid_pixels), 63)
+        modelfile = config.redmapper_filename('filter_model')
+        self.assertTrue(os.path.isfile(modelfile))
+        self.assertEqual(modelfile, config.duster_filter_model_file)
+
+        model = fitsio.read(modelfile, ext=1)
+        testing.assert_almost_equal(model[0]['k'], 3.5711356e-7)
+        testing.assert_almost_equal(model[0]['eta'], 2.35808614)
+        testing.assert_almost_equal(model[0]['C_noise'], 2.72645362e-08)
 
         # Check that the plots are there
-        comp1file = config.redmapper_filename('rho_raw_%s_comp' % (config.duster_label1),
+        modfile = config.redmapper_filename('filter_model',
+                                            paths=(config.plotpath, ),
+                                            filetype='png')
+        self.assertTrue(os.path.isfile(modfile))
+        comp1file = config.redmapper_filename('rho_filt_%s_comp' % (config.duster_label1),
                                               paths=(config.plotpath, ),
                                               filetype='png')
         self.assertTrue(os.path.isfile(comp1file))
-        comp2file = config.redmapper_filename('rho_raw_%s_comp' % (config.duster_label2),
+        comp2file = config.redmapper_filename('rho_filt_%s_comp' % (config.duster_label2),
                                               paths=(config.plotpath, ),
                                               filetype='png')
         self.assertTrue(os.path.isfile(comp2file))

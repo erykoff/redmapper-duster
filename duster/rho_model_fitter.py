@@ -89,7 +89,6 @@ class RhoModelFitter(object):
 
             rho_0, rho_min = compute_normalized_rho_pars(u, b)
 
-            fname = self.config.redmapper_filename('rho_model')
             arr = np.zeros(1, [('rho_0', 'f8'),
                                ('rho_min', 'f8'),
                                ('b', 'f8')])

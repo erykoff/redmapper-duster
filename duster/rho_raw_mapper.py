@@ -119,6 +119,7 @@ class RhoRawMapper(object):
         nside = self.config.duster_nside
 
         raw_fname = self.config.redmapper_filename('rho_raw_map', filetype='hsp')
+        self.config.duster_raw_map_file = raw_fname
         if os.path.isfile(raw_fname):
             self.config.logger.info("%s already there.  Skipping...", raw_fname)
             rho_raw_map = hsp.HealSparseMap.read(raw_fname)

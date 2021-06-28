@@ -31,6 +31,14 @@ class DusterConfiguration(Configuration):
     duster_b = ConfigField()
     duster_norm = ConfigField()
 
+    duster_raw_map_file = ConfigField()
+    duster_filtered_map_file = ConfigField()
+    duster_recon_map_file = ConfigField()
+    duster_reconvar_map_file = ConfigField()
+
+    duster_filter_ell_min = ConfigField(default=10)
+    duster_filter_model_file = ConfigField()
+
     duster_nwalkers = ConfigField(default=32)
     duster_nproc = ConfigField(default=2)
 
