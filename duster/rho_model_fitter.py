@@ -5,8 +5,8 @@ import emcee
 import corner
 import os
 import esutil
+import scipy.optimize
 from multiprocessing import Pool
-
 
 from .likelihoods import RhoModelLikelihood
 from .pdfs import compute_normalized_rho_pars, p_dust
@@ -43,17 +43,28 @@ class RhoModelFitter(object):
             chain = fitsio.read(chain_fname, ext=1)
         else:
             ndim = 2
-            nwalkers = self.config.duster_nwalkers
 
             bounds = [[np.log10(0.1), np.log10(20.0)],
                       [np.log10(0.01), np.log10(20.0)]]
 
-            p0 = np.zeros((nwalkers, ndim))
+            p0 = np.zeros(ndim)
             for i in range(ndim):
-                p0[:, i] = (bounds[i][1] - bounds[i][0])*np.random.random_sample(nwalkers) + bounds[i][0]
+                p0[i] = (bounds[i][0] + bounds[i][1])/2.
+
+            rho_like_min = RhoModelLikelihood(rho_map1, rho_map2, bounds, minimize=True)
+
+            # Find the maximum likelihood point to initialize chains
+            self.config.logger.info("Finding ML rho model parameters...")
+            soln = scipy.optimize.minimize(rho_like_min, p0, bounds=bounds)
+
+            nwalkers = self.config.duster_nwalkers
+
+            # Set the chains starting around a small ball near the ML point.
+            p0 = soln.x + 1e-4*np.random.randn(nwalkers, ndim)
 
             rho_like = RhoModelLikelihood(rho_map1, rho_map2, bounds)
 
+            self.config.logger.info("Running rho model chain...")
             with Pool(processes=self.config.duster_nproc) as pool:
                 sampler = emcee.EnsembleSampler(nwalkers, ndim, rho_like, pool=pool)
                 state = sampler.run_mcmc(p0, self.config.duster_rho_model_nsample1, progress=True)
@@ -61,9 +72,9 @@ class RhoModelFitter(object):
 
                 _ = sampler.run_mcmc(state, self.config.duster_rho_model_nsample2, progress=True)
 
-            lnprob = sampler.get_log_prob(flat=True)
+            lnprob = sampler.get_log_prob(flat=True).copy()
 
-            chain = sampler.get_chain(flat=True)
+            chain = sampler.get_chain(flat=True).copy()
             chain[:, 0] = 10.0**chain[:, 0]
             chain[:, 1] = 10.0**chain[:, 1]
 

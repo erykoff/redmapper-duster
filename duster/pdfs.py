@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.stats import norm
+import scipy.integrate
 
 
 def p_dust(rho_0, b, rho_min, rho_vals):
@@ -52,4 +54,49 @@ def compute_normalized_rho_pars(u, b):
     return rho_0, rho_min
 
 
-# Use scipy.stats.norm for p_gaussian
+class Pabgs(object):
+    """Class to compute P(rho_obs | alpha, beta, gamma, sigma2)
+
+    Parameters
+    ----------
+    rho_vals : `np.ndarray`
+        Array of values for integration.
+    rho_0 : `float`
+        Model rho_0 parameter.
+    rho_min : `float`
+        Model rho_min parameter.
+    b : `float`
+        Model b parameter.
+    """
+    def __init__(self, rho_vals, rho_0, rho_min, b):
+        self.rho_vals = rho_vals
+        self.rho_0 = rho_0
+        self.rho_min = rho_min
+        self.b = b
+        self.P_dust = p_dust(self.rho_0, self.b, self.rho_min, self.rho_vals)
+
+    def __call__(self, alpha, beta, gamma, sigma2, rho_obs):
+        """Compute P(rho_obs | alpha, beta, gamma, sigma2)
+
+        Parameters
+        ----------
+        alpha : `float`
+            Model alpha.
+        beta : `float`
+            Model beta.
+        gamma : `float`
+            Model gamma.
+        sigma2 : `float`
+            Model sigma**2.
+        rho_obs : `float`
+            Observed (and possibly filtered) rho.
+
+        Returns
+        -------
+        p : `float`
+            Integrated probability.
+        """
+        rho_obs_mean = alpha*(self.rho_vals**beta) + gamma
+        P_rho_obs_rho = norm.pdf(rho_obs, loc=rho_obs_mean, scale=np.sqrt(sigma2))
+
+        return scipy.integrate.simpson(P_rho_obs_rho*self.P_dust, self.rho_vals)

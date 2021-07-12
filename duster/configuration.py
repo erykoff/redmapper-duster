@@ -39,6 +39,8 @@ class DusterConfiguration(Configuration):
     duster_filter_ell_min = ConfigField(default=10)
     duster_filter_model_file = ConfigField()
 
+    duster_debias_model_chainfile = ConfigField()
+
     duster_nwalkers = ConfigField(default=32)
     duster_nproc = ConfigField(default=2)
 
@@ -52,6 +54,8 @@ class DusterConfiguration(Configuration):
 
     duster_rho_model_nsample1 = ConfigField(default=500)
     duster_rho_model_nsample2 = ConfigField(default=1000)
+    duster_debias_model_nsample1 = ConfigField(default=100)
+    duster_debias_model_nsample2 = ConfigField(default=500)
 
     def __init__(self, configfile, outpath=None):
         self._file_logging_started = False
