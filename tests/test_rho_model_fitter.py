@@ -36,9 +36,9 @@ class RhoModelFitterTestCase(unittest.TestCase):
         fitter.fit_rho_model(rho_map1, rho_map2)
 
         # Check that the numbers are what we expect
-        testing.assert_almost_equal(config.duster_rho_0, 0.16365385736856158, 6)
-        testing.assert_almost_equal(config.duster_rho_min, 0.8916969462799635, 6)
-        testing.assert_almost_equal(config.duster_b, 14.865741288145731, 6)
+        testing.assert_almost_equal(config.duster_rho_0, 0.1611384927054149, 6)
+        testing.assert_almost_equal(config.duster_rho_min, 0.9007161281002618, 6)
+        testing.assert_almost_equal(config.duster_b, 13.294168006029823, 6)
 
         # Check that the output files have been made and can be read
         self.assertTrue(os.path.isfile(config.duster_rho_model_file))

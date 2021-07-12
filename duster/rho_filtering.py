@@ -23,7 +23,10 @@ def cl_filter_fxn(x, k, eta, C_noise):
     fxn : array-like
        function evaluated at x
     """
-    return k*(x/50.)**(-1.*eta) + C_noise
+    with np.warnings.catch_warnings():
+        np.warnings.filterwarnings("ignore")
+        fxn = k*(x/50.)**(-1.*eta) + C_noise
+    return fxn
 
 
 def cl_filter_fit_fxn(x, k, eta, C_noise):

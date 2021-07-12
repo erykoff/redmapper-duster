@@ -4,7 +4,7 @@ import fitsio
 import emcee
 import corner
 import os
-import scipy.minimize
+import scipy.optimize
 from multiprocessing import Pool
 
 from .likelihoods import DebiasLikelihood
@@ -20,13 +20,15 @@ class DebiasFitter(object):
     def __init__(self, config):
         self.config = config
 
-    def fit_debias_model(self, rho_map_in):
+    def fit_debias_model(self, rho_map_in, testing=False):
         """Fit the debias model given an input rho map.
 
         Parameters
         ----------
         rho_map_in : `healsparse.HealSparseMap`
             Biased input rho map.
+        testing : `bool`, optional
+            Mode for testing to quickly do ML fit.
         """
         chain_fname = self.config.redmapper_filename('debias_model_chain')
         self.config.duster_debias_model_chainfile = chain_fname
@@ -55,7 +57,11 @@ class DebiasFitter(object):
                                                minimize=True)
 
             self.config.logger.info("Finding ML debias model parameters...")
-            soln = scipy.optimize.minimize(debias_like_min, p0, bounds=bounds)
+            if testing:
+                options = {'maxiter': 2}
+            else:
+                options = None
+            soln = scipy.optimize.minimize(debias_like_min, p0, bounds=bounds, options=options)
 
             nwalkers = self.config.duster_nwalkers
 
@@ -84,7 +90,7 @@ class DebiasFitter(object):
             chain[:, 3] = np.sqrt(10.0**chain[:, 3])
 
             fitsio.write(chain_fname, lnprob, clobber=True)
-            fitsio.write(chain_fname, chain, clobber=True)
+            fitsio.write(chain_fname, chain, clobber=False)
 
         # Plot the lnprobability
         lnprobfile = self.config.redmapper_filename('debias_model_lnprob',

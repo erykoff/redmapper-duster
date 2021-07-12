@@ -122,8 +122,8 @@ class DebiasLikelihood(object):
         sigma2 = 10.0**pars[3]
 
         lnlike = 0.0
-        for rho_obs in self.rho_obs_vals:
-            lnlike += np.log(np.clip(self.p_abgs(alpha, beta, gamma, sigma2, rho_obs), 1e-20, None))
+        for rho_in in self.rho_in_vals:
+            lnlike += np.log(np.clip(self.p_abgs(alpha, beta, gamma, sigma2, rho_in), 1e-20, None))
 
         # Add a prior on sigma2
         lnlike += np.log(sigma2)
