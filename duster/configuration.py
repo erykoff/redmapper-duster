@@ -51,6 +51,7 @@ class DusterConfiguration(Configuration):
 
     duster_color_indices = ConfigField(isArray=True, default=np.array([0, 1, 2]))
     duster_dereddening_constants = ConfigField(isArray=True)
+    duster_dereddening_ref_ind = ConfigField(required=True)
 
     duster_rho_model_nsample1 = ConfigField(default=500)
     duster_rho_model_nsample2 = ConfigField(default=1000)
@@ -87,6 +88,9 @@ class DusterConfiguration(Configuration):
                               "Assuming this is not intended."))
 
         self.d = DuplicatableConfig(self)
+
+        self.dered_const_norm = (np.array(self.duster_dereddening_constants) /
+                                 self.duster_dereddening_constants[self.duster_dereddening_ref_ind])
 
         # Finally, once everything is here, we can make paths
         if not os.path.exists(self.outpath):

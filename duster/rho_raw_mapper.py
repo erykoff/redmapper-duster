@@ -4,6 +4,7 @@ import esutil
 import healpy as hp
 import healsparse as hsp
 import os
+import fitsio
 import redmapper
 
 
@@ -131,8 +132,19 @@ class RhoRawMapper(object):
 
             zredstr = redmapper.RedSequenceColorPar(self.config.parfile, fine=True)
             indices = self.config.duster_color_indices
-            r_band = self.config.duster_dereddening_constants
-            norm = self.config.duster_norm  # FIX
+            r_band = self.config.dered_const_norm
+
+            if self.config.duster_norm is None:
+                # Get the normalization from the rho map
+                rho_hdr = fitsio.read_header(self.config.duster_rhofile1, ext=0)
+                if 'MEAN' not in rho_hdr:
+                    raise RuntimeError("Cannot determine normalization: MEAN must be in %s header." %
+                                       (self.config.duster_rhofile1))
+                ref_const = self.config.duster_dereddening_constants[self.config.duster_dereddening_ref_ind]
+                norm = ref_const*rho_hdr['MEAN']
+            else:
+                # Get the normalization from the configuration
+                norm = self.config.duster_norm
 
             rhoComputer = RhoRawPixelComputer(zredstr, indices, norm, r_band)
 
