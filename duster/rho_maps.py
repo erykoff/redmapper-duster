@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import healsparse as hsp
 
@@ -51,3 +52,31 @@ class RhoMapMaker(object):
         map_dg.metadata = metadata
 
         return map_dg
+
+    def make_rho_maps(self):
+        """Make and save multiple rho maps."""
+        nside = self.config.duster_nside
+
+        fname1 = self.config.redmapper_filename(f'rho_{self.config.duster_label1}',
+                                                filetype='hsp')
+        self.config.duster_rhofile1 = fname1
+
+        if os.path.isfile(fname1):
+            self.config.logger.info("%s already there.  Skipping...", fname1)
+        else:
+            self.config.logger.info("Normalizing %s", self.config.duster_mapfile1)
+            nmap1 = self.normalize_map(self.config.duster_mapfile1, nside)
+
+            nmap1.write(fname1)
+
+        fname2 = self.config.redmapper_filename(f'rho_{self.config.duster_label2}',
+                                                filetype='hsp')
+        self.config.duster_rhofile2 = fname2
+
+        if os.path.isfile(fname2):
+            self.config.logger.info("%s already there.  Skipping...", fname2)
+        else:
+            self.config.logger.info("Normalizing %s", self.config.duster_mapfile2)
+            nmap2 = self.normalize_map(self.config.duster_mapfile2, nside)
+
+            nmap2.write(fname2)

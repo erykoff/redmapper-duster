@@ -44,7 +44,7 @@ def reconstruct_map(rho_map_in, rho_0, rho_min, b, chain):
     rho_int_vals = np.arange(RHO_INTEGRAL_MIN,
                              RHO_INTEGRAL_MAX,
                              RHO_INTEGRAL_STEP2) + RHO_INTEGRAL_OFFSET
-    # P_dust = p_dust(rho_0, b, rho_min, rho_int_vals)
+    P_dust = p_dust(rho_0, b, rho_min, rho_int_vals)
 
     rho_mean = np.zeros(rho_int_vals.size)
     rho2_mean = np.zeros(rho_int_vals.size)
@@ -60,12 +60,12 @@ def reconstruct_map(rho_map_in, rho_0, rho_min, b, chain):
     for pix in vpix:
         rho_in = rho_map_in[pix]
         gaussian = norm.pdf(rho_in, loc=rho_mean, scale=np.sqrt(rho_var))
-        numerator = scipy.integrate.simpson(gaussian*p_dust*rho_int_vals, rho_int_vals)
-        denominator = scipy.integrate.simpson(gaussian*p_dust, rho_int_vals)
+        numerator = scipy.integrate.simpson(gaussian*P_dust*rho_int_vals, rho_int_vals)
+        denominator = scipy.integrate.simpson(gaussian*P_dust, rho_int_vals)
 
         rho_map_out[int(pix)] = numerator/denominator
 
-        numerator2 = scipy.integrate.simpson(gaussian*p_dust*rho_int_vals*rho_int_vals, rho_int_vals)
+        numerator2 = scipy.integrate.simpson(gaussian*P_dust*rho_int_vals*rho_int_vals, rho_int_vals)
         var_map_out[int(pix)] = numerator2/denominator - (numerator/denominator)**2.
 
     return rho_map_out, var_map_out
@@ -155,5 +155,5 @@ class RhoReconstructor(object):
             ax.set_ylabel(r'$\rho_{\mathrm{recon}}$')
             ax.set_title('nside = %d, reconstructed' % (nside))
             fig.tight_layout()
-            fig.savefig(map1_comp_file)
+            fig.savefig(map2_comp_file)
             plt.close(fig)

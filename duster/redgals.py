@@ -30,6 +30,8 @@ class RedGalaxySelector(object):
 
             tab = redmapper.Entry.from_fits_file(self.config.galfile)
 
+            self.config.logger.info("Selecting red galaxies from %d galaxy pixels.", len(tab.hpix))
+
             started = False
             for i, pix in enumerate(tab.hpix):
                 gals = redmapper.GalaxyCatalog.from_galfile(self.config.galfile,

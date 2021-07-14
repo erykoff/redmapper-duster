@@ -126,7 +126,7 @@ class RhoMapFilterer(object):
             fig.clf()
             ax = fig.add_subplot(111)
             ax.plot(ell[ell_use], c_ell[ell_use], 'm-', label=r'$\rho_{\mathrm{in}}$')
-            ax.plot(ell[ell_use], cl_filter_fxn(ell[ell_use], k, eta, C_noise), label='Filter')
+            ax.plot(ell[ell_use], cl_filter_fxn(ell[ell_use], k, eta, C_noise), 'k--', label='Filter')
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.set_xlabel('ell')
@@ -172,10 +172,14 @@ class RhoMapFilterer(object):
 
             rho1 = hsp.HealSparseMap.read(self.config.duster_rhofile1)
 
+            # Use the raw map to match scales
+            extent = [rho1[vpix].min(), rho1[vpix].max(),
+                      rho_map[vpix].min(), rho_map[vpix].max()]
+
             fig = plt.figure(1, figsize=(8, 6))
             fig.clf()
             ax = fig.add_subplot(111)
-            ax.hexbin(rho1[vpix], rho_filtered_map[vpix], bins='log', gridsize=50)
+            ax.hexbin(rho1[vpix], rho_filtered_map[vpix], bins='log', gridsize=50, extent=extent)
             ax.set_xlabel(r'$\rho_{\mathrm{%s}}$' % (self.config.duster_label1))
             ax.set_ylabel(r'$\rho_{\mathrm{filtered}}$')
             ax.set_title('nside = %d, filtered' % (nside))
@@ -193,10 +197,13 @@ class RhoMapFilterer(object):
 
             rho2 = hsp.HealSparseMap.read(self.config.duster_rhofile2)
 
+            extent = [rho2[vpix].min(), rho2[vpix].max(),
+                      rho_map[vpix].min(), rho_map[vpix].max()]
+
             fig = plt.figure(1, figsize=(8, 6))
             fig.clf()
             ax = fig.add_subplot(111)
-            ax.hexbin(rho2[vpix], rho_filtered_map[vpix], bins='log', gridsize=50)
+            ax.hexbin(rho2[vpix], rho_filtered_map[vpix], bins='log', gridsize=50, extent=extent)
             ax.set_xlabel(r'$\rho_{\mathrm{%s}}$' % (self.config.duster_label2))
             ax.set_ylabel(r'$\rho_{\mathrm{filtered}}$')
             ax.set_title('nside = %d, filtered' % (nside))

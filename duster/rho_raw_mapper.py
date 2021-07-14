@@ -125,6 +125,7 @@ class RhoRawMapper(object):
             self.config.logger.info("%s already there.  Skipping...", raw_fname)
             rho_raw_map = hsp.HealSparseMap.read(raw_fname)
         else:
+            self.config.logger.info("Computing rho raw map.")
             ipnest = hp.ang2pix(nside, gals.ra, gals.dec, nest=True, lonlat=True)
             h, rev = esutil.stat.histogram(ipnest, rev=True, min=0, max=hp.nside2npix(nside))
 

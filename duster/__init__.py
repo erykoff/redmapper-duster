@@ -8,3 +8,5 @@ from .rho_model_fitter import RhoModelFitter
 from .rho_raw_mapper import RhoRawPixelComputer, RhoRawMapper
 from .rho_filtering import cl_filter_fxn, RhoMapFilterer
 from .debias_fitter import DebiasFitter
+from .redgals import RedGalaxySelector
+from .rho_reconstructor import RhoReconstructor, reconstruct_map

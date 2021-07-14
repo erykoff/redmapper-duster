@@ -51,7 +51,7 @@ class DusterConfiguration(Configuration):
 
     duster_color_indices = ConfigField(isArray=True, default=np.array([0, 1, 2]))
     duster_dereddening_constants = ConfigField(isArray=True)
-    duster_dereddening_ref_ind = ConfigField(required=True)
+    duster_dereddening_ref_ind = ConfigField(required=True, default=1)
 
     duster_rho_model_nsample1 = ConfigField(default=500)
     duster_rho_model_nsample2 = ConfigField(default=1000)
@@ -79,6 +79,27 @@ class DusterConfiguration(Configuration):
         logname = 'duster'
         logging.basicConfig(level=logging.INFO)
         self.logger = logging.getLogger(logname)
+
+        # We allow a blank galfile for duster, if neccessary.
+        if self.galfile is None:
+            self.galfile = 'no_galfile'
+
+        # get galaxy file stats
+        if self.galfile != 'no_galfile':
+            gal_stats = self._galfile_stats()
+            self.galfile_area = gal_stats['area']
+            if (self.area is not None):
+                if self.depthfile is not None:
+                    self.logger.info("WARNING: You should not need to set area "
+                                     "in the config file when you have a depth map.")
+                if (np.abs(self.area - gal_stats['area']) > 1e-3):
+                    self.logger.info("Config area is not equal to galaxy file area.  Using config area.")
+                    gal_stats.pop('area')
+            else:
+                if self.depthfile is None and self.nside > 0 and len(self.hpix) > 0:
+                    raise RuntimeError("You must set a config file area if no "
+                                       "depthfile is present and you are running a sub-region")
+            self._set_vars_from_dict(gal_stats, check_none=True)
 
         self.validate()
 
