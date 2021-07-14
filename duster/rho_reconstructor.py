@@ -3,7 +3,6 @@ import numpy as np
 from scipy.stats import norm
 import fitsio
 import healsparse as hsp
-import scipy.integrate
 import matplotlib.pyplot as plt
 
 from .pdfs import p_dust
@@ -60,12 +59,13 @@ def reconstruct_map(rho_map_in, rho_0, rho_min, b, chain):
     for pix in vpix:
         rho_in = rho_map_in[pix]
         gaussian = norm.pdf(rho_in, loc=rho_mean, scale=np.sqrt(rho_var))
-        numerator = scipy.integrate.simpson(gaussian*P_dust*rho_int_vals, rho_int_vals)
-        denominator = scipy.integrate.simpson(gaussian*P_dust, rho_int_vals)
+
+        numerator = np.trapz(gaussian*P_dust*rho_int_vals, x=rho_int_vals)
+        denominator = np.trapz(gaussian*P_dust, x=rho_int_vals)
 
         rho_map_out[int(pix)] = numerator/denominator
 
-        numerator2 = scipy.integrate.simpson(gaussian*P_dust*rho_int_vals*rho_int_vals, rho_int_vals)
+        numerator2 = np.trapz(gaussian*P_dust*rho_int_vals*rho_int_vals, x=rho_int_vals)
         var_map_out[int(pix)] = numerator2/denominator - (numerator/denominator)**2.
 
     return rho_map_out, var_map_out

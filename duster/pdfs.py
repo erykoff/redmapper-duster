@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.stats import norm
-import scipy.integrate
 
 
 def p_dust(rho_0, b, rho_min, rho_vals):
@@ -99,4 +98,4 @@ class Pabgs(object):
         rho_obs_mean = alpha*(self.rho_vals**beta) + gamma
         P_rho_obs_rho = norm.pdf(rho_obs, loc=rho_obs_mean, scale=np.sqrt(sigma2))
 
-        return scipy.integrate.simpson(P_rho_obs_rho*self.P_dust, self.rho_vals)
+        return np.trapz(P_rho_obs_rho*self.P_dust, x=self.rho_vals)

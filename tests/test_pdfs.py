@@ -1,6 +1,5 @@
 import unittest
 import numpy as np
-import scipy.integrate
 import numpy.testing as testing
 
 from duster import pdfs
@@ -31,7 +30,7 @@ class PdfTestCase(unittest.TestCase):
             rho_0, rho_min = pdfs.compute_normalized_rho_pars(u[i], b[i])
             p_dust = pdfs.p_dust(rho_0, b[i], rho_min, rho_vals)
 
-            integrals[i] = scipy.integrate.simpson(p_dust, rho_vals)
+            integrals[i] = np.trapz(p_dust, x=rho_vals)
 
         # Ensure that the normalization is 1.0
         testing.assert_array_almost_equal(integrals, 1.0, decimal=4)
@@ -63,7 +62,7 @@ class PdfTestCase(unittest.TestCase):
             vals = np.zeros(rho_twiddle_vals.size)
             for j in range(rho_twiddle_vals.size):
                 vals[j] = pabgs(alpha[i], beta[i], gamma[i], sigma2[i], rho_twiddle_vals[j])
-            integrals[i] = scipy.integrate.simpson(vals, rho_twiddle_vals)
+            integrals[i] = np.trapz(vals, x=rho_twiddle_vals)
 
         # Ensure that the normalization is 1.0
         testing.assert_array_almost_equal(integrals, 1.0, decimal=4)
