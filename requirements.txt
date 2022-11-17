@@ -1,3 +1,5 @@
 redmapper
 emcee
 corner
+matplotlib
+skyproj
