@@ -15,6 +15,8 @@ class RhoRawPixelComputer(object):
     ----------
     zredstr : `redmapper.RedSequenceColorPar`
         Red sequence parameterization object.
+    indices : `np.ndarray`
+        Indices to sum for colors.
     norm : `float`
         Reddening normalization value.
     r_band : array-like
@@ -105,6 +107,24 @@ class RhoRawMapper(object):
     """
     def __init__(self, config):
         self.config = config
+        self._norm = None
+
+    @property
+    def norm(self):
+        if self._norm is not None:
+            return self._norm
+
+        if self.config.duster_norm is None:
+            rho_hdr = fitsio.read_header(self.config.duster_rhofile1, ext=0)
+            if 'MEAN' not in rho_hdr:
+                raise RuntimeError("Cannot determine normalization: MEAN must be in %s header." %
+                                       (self.config.duster_rhofile1))
+            ref_const = self.config.duster_dereddening_constants[self.config.duster_dereddening_ref_ind]
+            self._norm = ref_const*rho_hdr['MEAN']
+        else:
+            self._norm = self.config.duster_norm
+
+        return self._norm
 
     def fit_rho_obs_raw_map(self, gals):
         """Fit the rho_obs raw map from a set of galaxies.
@@ -135,17 +155,7 @@ class RhoRawMapper(object):
             indices = self.config.duster_color_indices
             r_band = self.config.dered_const_norm
 
-            if self.config.duster_norm is None:
-                # Get the normalization from the rho map
-                rho_hdr = fitsio.read_header(self.config.duster_rhofile1, ext=0)
-                if 'MEAN' not in rho_hdr:
-                    raise RuntimeError("Cannot determine normalization: MEAN must be in %s header." %
-                                       (self.config.duster_rhofile1))
-                ref_const = self.config.duster_dereddening_constants[self.config.duster_dereddening_ref_ind]
-                norm = ref_const*rho_hdr['MEAN']
-            else:
-                # Get the normalization from the configuration
-                norm = self.config.duster_norm
+            norm = self.norm
 
             rhoComputer = RhoRawPixelComputer(zredstr, indices, norm, r_band)
 

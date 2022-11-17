@@ -31,15 +31,23 @@ class RedGalaxySelector(object):
             tab = redmapper.Entry.from_fits_file(self.config.galfile)
 
             self.config.logger.info("Selecting red galaxies from %d galaxy pixels.", len(tab.hpix))
+            if self.config.dereddener is None:
+                self.config.logger.info("Not applying any reddening corrections to galaxies.")
+            else:
+                self.config.logger.info("Applying reddening corrections to galaxies.")
 
             started = False
             for i, pix in enumerate(tab.hpix):
+                if (i % 100) == 0:
+                    self.config.logger.info('Working on pixel number %d', i)
+
                 gals = redmapper.GalaxyCatalog.from_galfile(self.config.galfile,
                                                             zredfile=self.config.zredfile,
                                                             nside=tab.nside,
                                                             hpix=pix,
                                                             border=0.0,
-                                                            truth=self.config.has_truth)
+                                                            truth=self.config.has_truth,
+                                                            dereddener=self.config.dereddener)
                 # Select out the galaxies
                 mstar = zredstr.mstar(gals.zred_uncorr)
                 use, = np.where((gals.zred_uncorr > self.config.duster_zrange[0]) &

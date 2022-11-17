@@ -8,6 +8,7 @@ import logging
 
 from redmapper.configuration import (ConfigField, Configuration, read_yaml,
                                      DuplicatableConfig)
+from redmapper.dereddener import Dereddener
 
 
 class DusterConfiguration(Configuration):
@@ -109,6 +110,12 @@ class DusterConfiguration(Configuration):
                               "Assuming this is not intended."))
 
         self.d = DuplicatableConfig(self)
+
+        if self.dereddening_apply:
+            self.dereddener = Dereddener(self.dereddening_mapfile, self.dereddening_norm,
+                                         self.dereddening_constants, self.nmag, self.ref_ind)
+        else:
+            self.dereddener = None
 
         self.dered_const_norm = (np.array(self.duster_dereddening_constants) /
                                  self.duster_dereddening_constants[self.duster_dereddening_ref_ind])
