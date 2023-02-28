@@ -5,6 +5,7 @@ import scipy.optimize
 import os
 import healsparse as hsp
 import fitsio
+import warnings
 
 
 def cl_filter_fxn(x, k, eta, C_noise):
@@ -23,8 +24,8 @@ def cl_filter_fxn(x, k, eta, C_noise):
     fxn : array-like
        function evaluated at x
     """
-    with np.warnings.catch_warnings():
-        np.warnings.filterwarnings("ignore")
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
         fxn = k*(x/50.)**(-1.*eta) + C_noise
     return fxn
 
